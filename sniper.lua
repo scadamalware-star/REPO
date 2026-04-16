@@ -84,47 +84,67 @@ player.Idled:Connect(function()
     end
 end)
 
---// GUI
-local ScreenGui = Instance.new("ScreenGui")
-ScreenGui.Parent = game.CoreGui
+--========================
+-- GUI SYSTEM (FIXED)
+--========================
 
+-- GUI UTAMA (DI ATAS)
+local MainGui = Instance.new("ScreenGui")
+MainGui.Name = "MainUI"
+MainGui.IgnoreGuiInset = true
+MainGui.DisplayOrder = 10
+MainGui.Parent = game.CoreGui
+
+-- BLACK SCREEN GUI (DI BELAKANG)
+local BlackGui = Instance.new("ScreenGui")
+BlackGui.Name = "BlackScreenUI"
+BlackGui.IgnoreGuiInset = true
+BlackGui.DisplayOrder = 1
+BlackGui.Parent = game.CoreGui
+
+-- FRAME UTAMA
 local Frame = Instance.new("Frame")
-Frame.Size = UDim2.new(0, 200, 0, 180)
+Frame.Size = UDim2.new(0, 200, 0, 200)
 Frame.Position = UDim2.new(0, 50, 0, 50)
 Frame.BackgroundColor3 = Color3.fromRGB(30,30,30)
-Frame.Parent = ScreenGui
+Frame.Parent = MainGui
+Frame.ZIndex = 10
 
--- BUTTON TEMPLATE FUNCTION
+-- FUNCTION BUTTON
 local function createButton(text, posY)
     local btn = Instance.new("TextButton")
-    btn.Size = UDim2.new(1, 0, 0.25, 0)
+    btn.Size = UDim2.new(1, 0, 0.2, 0)
     btn.Position = UDim2.new(0, 0, posY, 0)
     btn.Text = text
     btn.TextColor3 = Color3.new(1,1,1)
     btn.BackgroundColor3 = Color3.fromRGB(50,50,50)
+    btn.ZIndex = 10
     btn.Parent = Frame
     return btn
 end
 
--- SNIPER BUTTON
+-- BUTTONS
 local sniperBtn = createButton("SNIPER: OFF", 0)
+local afkBtn = createButton("ANTI AFK: OFF", 0.2)
+local blackBtn = createButton("BLACK SCREEN: OFF", 0.4)
+local renderBtn = createButton("RENDER: ON", 0.6)
+
+-- SNIPER
 sniperBtn.MouseButton1Click:Connect(function()
     sniperEnabled = not sniperEnabled
     sniperBtn.Text = sniperEnabled and "SNIPER: ON" or "SNIPER: OFF"
     sniperBtn.BackgroundColor3 = sniperEnabled and Color3.fromRGB(0,170,0) or Color3.fromRGB(50,50,50)
 end)
 
--- ANTI AFK BUTTON
-local afkBtn = createButton("ANTI AFK: OFF", 0.25)
+-- ANTI AFK
 afkBtn.MouseButton1Click:Connect(function()
     antiAfkEnabled = not antiAfkEnabled
     afkBtn.Text = antiAfkEnabled and "ANTI AFK: ON" or "ANTI AFK: OFF"
     afkBtn.BackgroundColor3 = antiAfkEnabled and Color3.fromRGB(0,170,0) or Color3.fromRGB(50,50,50)
 end)
 
--- BLACK SCREEN
+-- BLACK SCREEN FIX
 local blackFrame = nil
-local blackBtn = createButton("BLACK SCREEN: OFF", 0.5)
 
 blackBtn.MouseButton1Click:Connect(function()
     blackEnabled = not blackEnabled
@@ -133,11 +153,15 @@ blackBtn.MouseButton1Click:Connect(function()
         blackBtn.Text = "BLACK SCREEN: ON"
         blackBtn.BackgroundColor3 = Color3.fromRGB(0,170,0)
 
-        blackFrame = Instance.new("Frame")
-        blackFrame.Size = UDim2.new(1,0,1,0)
-        blackFrame.BackgroundColor3 = Color3.new(0,0,0)
-        blackFrame.BorderSizePixel = 0
-        blackFrame.Parent = ScreenGui
+        if not blackFrame then
+            blackFrame = Instance.new("Frame")
+            blackFrame.Size = UDim2.new(1,0,1,0)
+            blackFrame.Position = UDim2.new(0,0,0,0)
+            blackFrame.BackgroundColor3 = Color3.new(0,0,0)
+            blackFrame.BorderSizePixel = 0
+            blackFrame.ZIndex = 1
+            blackFrame.Parent = BlackGui
+        end
     else
         blackBtn.Text = "BLACK SCREEN: OFF"
         blackBtn.BackgroundColor3 = Color3.fromRGB(50,50,50)
@@ -149,9 +173,7 @@ blackBtn.MouseButton1Click:Connect(function()
     end
 end)
 
--- RENDER TOGGLE
-local renderBtn = createButton("RENDER: ON", 0.75)
-
+-- RENDER
 renderBtn.MouseButton1Click:Connect(function()
     renderEnabled = not renderEnabled
     RunService:Set3dRenderingEnabled(renderEnabled)
