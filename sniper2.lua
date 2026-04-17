@@ -44,36 +44,55 @@ player.Idled:Connect(function()
     end
 end)
 
---// BLACK SCREEN (tidak ganggu GUI)
-local screenGui = Instance.new("ScreenGui", player:WaitForChild("PlayerGui"))
+--// GUI ROOT
+local screenGui = Instance.new("ScreenGui")
 screenGui.Name = "SniperUI"
 screenGui.ResetOnSpawn = false
+screenGui.IgnoreGuiInset = true
+screenGui.DisplayOrder = 10
+screenGui.Parent = player:WaitForChild("PlayerGui")
 
-local black = Instance.new("Frame", screenGui)
+--// BLACK SCREEN (AMAN)
+local black = Instance.new("Frame")
 black.Size = UDim2.new(1,0,1,0)
 black.BackgroundColor3 = Color3.new(0,0,0)
-black.BackgroundTransparency = 0.4
-black.ZIndex = 0
+black.BackgroundTransparency = 0.5 -- tidak nutup total
+black.ZIndex = 1
+black.Parent = screenGui
 
---// GUI
-local frame = Instance.new("Frame", screenGui)
+--// MAIN FRAME
+local frame = Instance.new("Frame")
 frame.Size = UDim2.new(0,200,0,120)
 frame.Position = UDim2.new(0,20,0,100)
 frame.BackgroundColor3 = Color3.fromRGB(30,30,30)
-frame.ZIndex = 10
+frame.ZIndex = 100
+frame.Parent = screenGui
 
+--// TITLE
+local title = Instance.new("TextLabel", frame)
+title.Size = UDim2.new(1,0,0,20)
+title.Text = "SNIPER PANEL"
+title.BackgroundTransparency = 1
+title.TextColor3 = Color3.new(1,1,1)
+title.ZIndex = 101
+
+--// BUTTON SNIPER
 local toggleSniper = Instance.new("TextButton", frame)
 toggleSniper.Size = UDim2.new(1,0,0,40)
+toggleSniper.Position = UDim2.new(0,0,0,20)
 toggleSniper.Text = "Sniper: OFF"
 toggleSniper.BackgroundColor3 = Color3.fromRGB(100,0,0)
+toggleSniper.ZIndex = 101
 
+--// BUTTON AFK
 local toggleAFK = Instance.new("TextButton", frame)
 toggleAFK.Size = UDim2.new(1,0,0,40)
-toggleAFK.Position = UDim2.new(0,0,0,40)
+toggleAFK.Position = UDim2.new(0,0,0,60)
 toggleAFK.Text = "Anti AFK: OFF"
 toggleAFK.BackgroundColor3 = Color3.fromRGB(100,0,0)
+toggleAFK.ZIndex = 101
 
---// TOGGLES
+--// TOGGLE FUNCTION
 toggleSniper.MouseButton1Click:Connect(function()
     sniperON = not sniperON
     toggleSniper.Text = "Sniper: "..(sniperON and "ON" or "OFF")
@@ -86,7 +105,7 @@ toggleAFK.MouseButton1Click:Connect(function()
     toggleAFK.BackgroundColor3 = antiAFK and Color3.fromRGB(0,150,0) or Color3.fromRGB(100,0,0)
 end)
 
---// SCAN AWAL (hindari deteksi item lama)
+--// SCAN AWAL
 for _, item in pairs(AuctionItems:GetChildren()) do
     local id = item:GetAttribute("Id")
     if id then
@@ -106,28 +125,25 @@ local function checkItem(item)
     local price = item:GetAttribute("Price")
     local rarity = Items:GetRarity(item)
 
-    -- FILTER TARGET
     if name == TARGET_NAME and rarity == TARGET_RARITY then
         
-        -- LOG
         sendWebhook("🔥 SNIPED ITEM!\nName: "..name..
             "\nPrice: "..tostring(price)..
             "\nRarity: "..tostring(rarity))
 
-        -- AUTO BUY
         pcall(function()
             Auctions:PurchaseItem(player, id)
         end)
     end
 end
 
---// EVENT (REALTIME)
+--// EVENT REALTIME
 AuctionItems.ChildAdded:Connect(function(item)
-    task.wait(0.05) -- biar attribute kebaca
+    task.wait(0.05)
     checkItem(item)
 end)
 
---// OPTIONAL: MICRO LOOP (super cepat, optional)
+--// MICRO LOOP (OPSIONAL CEPAT)
 task.spawn(function()
     while true do
         if sniperON then
