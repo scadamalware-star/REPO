@@ -1,7 +1,7 @@
 --// CONFIG
 local TARGET_NAME = "Bashing Necklace"
 local TARGET_RARITY = 6 -- Mythic (sesuaikan jika beda)
-local WEBHOOK_URL = "MASUKKAN_WEBHOOK_KAMU"
+local WEBHOOK_URL = "https://discord.com/api/webhooks/1494567227381256335/N6RX7FM8IQOC_eXqUqkJgT3Q3tPDWurRe1aNMjD0ChT4jgRLJIwpBmPWrBh7Nxxs4kAT"
 
 --// SERVICES
 local Players = game:GetService("Players")
